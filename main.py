@@ -1,6 +1,6 @@
 
 from functools import wraps
-from flask import Flask,Blueprint, current_app, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import os
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -9,8 +9,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 app = Flask(__name__) 
-
-# Change this to your secret key (can be anything, it's for extra protection)
 app.secret_key = 'holakeHace'
 
 app.config['MYSQL_HOST'] = os.getenv("MYSQL_HOST")
@@ -30,60 +28,52 @@ def login_required(f):
             return jsonify(message='Debe iniciar sesión para acceder a este recurso'), 401
     return wrap
 
+#Controladores de la app
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Output message if something goes wrong...
+    # Mensaje para enviar cualquier respuesta
     msg = ''
-    # Check if "username" and "password" POST requests exist (user submitted form)
+    # Check usuario y password
     if request.method == 'POST' and 'usuario' in request.form and 'password' in request.form:
-        # Create variables for easy access
+        #Guardamos los datos del form en variables
         usuario = request.form['usuario']
         password = request.form['password']
-        # Check if account exists using MySQL
+        # Chekeamos si existe el usuario y la pwd en la bd
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM cuentas WHERE usuario = %s AND password = %s', (usuario, password,))
-        # Fetch one record and return result
         account = cursor.fetchone()
-        # If account exists in accounts table in out database
+        # Si el usuario existe agregamos los datos a nuestra session sino mandamos un error
         if account:
             app.logger.info('%s Ha ingresado el usuario: ', usuario)
-            # Create session data, we can access this data in other routes
             session['loggedin'] = True
             session['id'] = account['id']
             session['usuario'] = account['usuario']
-            # Redirect to home page
             return redirect(url_for('home'))
         else:
-            # Account doesnt exist or username/password incorrect
             msg = 'Contraseña o Usuario incorrecto!'
-    # Show the login form with message (if any)
     return render_template('login.html', msg=msg)
 
 @app.route('/logout')
 def logout():
-    # Remove session data, this will log the user out                                       
+    # Removemos la session                                      
    session.pop('loggedin', None)
    session.pop('id', None)
    session.pop('usuario', None)
-   # Redirect to login page
    return redirect(url_for('login'))
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
-    # Output message if something goes wrong...
     msg = ''
-    # Check if "username", "password" and "email" POST requests exist (user submitted form)
     if request.method == 'POST' and 'usuario' in request.form and 'password' in request.form and 'correo' in request.form:
-        # Create variables for easy access
         usuario = request.form['usuario']
         password = request.form['password']
         correo = request.form['correo']
 
-    # Check if account exists using MySQL
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM cuentas WHERE usuario = %s', (usuario,))
         account = cursor.fetchone()
-        # If account exists show error and validation checks
+
         if account:
             msg = 'Este usuario ya se encuentra registrado!'
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', correo):
@@ -93,38 +83,35 @@ def registro():
         elif not usuario or not password or not correo:
             msg = 'Porfavor Ingresa datos en el formulario!'
         else:
-            # Account doesnt exists and the form data is valid, now insert new account into accounts table
             cursor.execute('INSERT INTO cuentas VALUES (NULL, %s, %s, %s)', (usuario, password, correo,))
             mysql.connection.commit()
             msg = 'Te has registrado con exito!'
     elif request.method == 'POST':
-        # Form is empty... (no POST data)
         msg = 'Porfavor Ingresa datos en el formulario!'
-    # Show registration form with message (if any)
+
     return render_template('registro.html', msg=msg)
 
 @app.route('/')
 def home():
-    # Check if user is loggedin
     if 'loggedin' in session:
-        # User is loggedin show them the home page
         return render_template('home.html', usuario=session['usuario'])
-    # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
 @app.route('/perfil')
 def perfil():
-    # Check if user is loggedin
     if 'loggedin' in session:
-        # We need all the account info for the user so we can display it on the profile page
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM cuentas WHERE id = %s', (session['id'],))
         cuenta = cursor.fetchone()
-        # Show the profile page with account info
         return render_template('perfil.html', cuenta=cuenta)
-    # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
+@app.route('/recursos')
+@login_required
+def getRecursos():
+    return jsonify(mensaje="Soy un recurso web")
+
+##### HealthCheck
 health_status = True
 
 @app.route('/toggle')
@@ -143,10 +130,7 @@ def health():
         resp.status_code = 500
     return resp
 
-@app.route('/recursos')
-@login_required
-def getRecursos():
-    return jsonify(mensaje="Soy un recurso web")
+###### Errores 
 
 @app.errorhandler(404)
 def not_found(error):
@@ -160,7 +144,7 @@ def que_buscas(error):
 def error_auth():
     return jsonify(mensaje="Error, debes ingresar a tu cuenta para ingresar aqui!"),401
 
-#Api
+#### Controladores del api
 @app.route('/api/login', methods=['POST'])
 def apiLogin():
     # Check if "username" and "password" POST requests exist (user submitted form)
@@ -186,7 +170,6 @@ def apiLogin():
         # Account doesnt exist or username/password incorrect
         return jsonify(success=False, mensaje='Usuario o contraseña incorrecta')
 
-#Api
 @app.route('/api/login', methods=['GET'])
 def apiLoginGet():
     estado = session.get('loggedin')
@@ -204,6 +187,8 @@ def api_logout():
    session.pop('usuario', None)
    # Redirect to login page
    return jsonify({"mensaje":"Session eliminada con exito!"})
+
+
 
 if __name__ == '__main__':
     app.run(debug=os.getenv("DEBUG"),host='0.0.0.0', port=os.getenv("PORT", default=5000))
