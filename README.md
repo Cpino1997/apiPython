@@ -5,13 +5,10 @@
 
 Este proyecto esta creado con [Flask](https://flask.palletsprojects.com/en/1.1.x/).
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/zUcpux)
-
 ## ✨ Tecnologias
 
 - Python
 - Flask
-- RailWay
 
 ## 💁‍♀️ Como Ejecutarlo en local?
 
