@@ -1,4 +1,3 @@
-
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import os
@@ -6,17 +5,15 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
 from dotenv import load_dotenv
+from api.handlers import *
+from config.db import * 
+from api.controladores import *
 
 load_dotenv()
 app = Flask(__name__) 
 app.secret_key = 'holakeHace'
 
-app.config['MYSQL_HOST'] = os.getenv("MYSQL_HOST")
-app.config['MYSQL_USER'] = os.getenv("MYSQL_USER")
-app.config['MYSQL_PASSWORD'] = os.getenv("MYSQL_PASSWORD")
-app.config['MYSQL_DB'] = os.getenv("MYSQL_DB")
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-# Intialize MySQL
+app.config.from_object(Config)
 mysql = MySQL(app)
 
 def login_required(f):
@@ -28,8 +25,7 @@ def login_required(f):
             return jsonify(message='Debe iniciar sesión para acceder a este recurso'), 401
     return wrap
 
-#Controladores de la app
-
+######Controladores de la app
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # Mensaje para enviar cualquier respuesta
@@ -111,6 +107,12 @@ def perfil():
 def getRecursos():
     return jsonify(mensaje="Soy un recurso web")
 
+### api points
+app.add_url_rule('/api/test','test22',test22)
+app.add_url_rule('/api/login', 'apiLogin', apiLogin, methods=['POST'])
+app.add_url_rule('/api/login', 'apiLoginGet', apiLoginGet, methods=['GET'])
+app.add_url_rule('/api/logout', 'api_logout', api_logout)
+
 ##### HealthCheck
 health_status = True
 
@@ -129,66 +131,6 @@ def health():
         resp = jsonify(health="muerto")
         resp.status_code = 500
     return resp
-
-###### Errores 
-
-@app.errorhandler(404)
-def not_found(error):
-    return jsonify(message="Endpoint no encontrado"), 404
-
-@app.errorhandler(405)
-def que_buscas(error):
-    return jsonify(message="Hey tu!, que estas buscando?"), 405
-
-@app.errorhandler(401)
-def error_auth():
-    return jsonify(mensaje="Error, debes ingresar a tu cuenta para ingresar aqui!"),401
-
-#### Controladores del api
-@app.route('/api/login', methods=['POST'])
-def apiLogin():
-    # Check if "username" and "password" POST requests exist (user submitted form)
-    if request.is_json:
-    # Get data from json
-        data = request.get_json()
-        usuario = data.get('usuario')
-        password = data.get('password')
-        # Check if account exists using MySQL
-        cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM cuentas WHERE usuario = %s AND password = %s', (usuario, password,))
-        cuenta = cursor.fetchone()
-    # If account exists in accounts table in out database
-    if cuenta:
-        app.logger.info('%s Ha ingresado el usuario: ', usuario)
-        # Create session data, we can access this data in other routes
-        session['loggedin'] = True
-        session['id'] = cuenta['id']
-        session['usuario'] = cuenta['usuario']
-        # Return success message
-        return jsonify(success=True, mensaje='Inicio de sesión exitoso', usuario=cuenta)
-    else:
-        # Account doesnt exist or username/password incorrect
-        return jsonify(success=False, mensaje='Usuario o contraseña incorrecta')
-
-@app.route('/api/login', methods=['GET'])
-def apiLoginGet():
-    estado = session.get('loggedin')
-    if estado:
-        cuenta = session['usuario']
-        return jsonify(mensaje='Estas ingresado como '+ cuenta)
-    else:
-        return error_auth()
-
-@app.route('/api/logout')
-def api_logout():
-    # Remove session data, this will log the user out                                       
-   session.pop('loggedin', None)
-   session.pop('id', None)
-   session.pop('usuario', None)
-   # Redirect to login page
-   return jsonify({"mensaje":"Session eliminada con exito!"})
-
-
-
+   
 if __name__ == '__main__':
     app.run(debug=os.getenv("DEBUG"),host='0.0.0.0', port=os.getenv("PORT", default=5000))
