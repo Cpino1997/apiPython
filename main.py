@@ -26,6 +26,7 @@ def login_required(f):
     return wrap
 
 ######Controladores de la app
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # Mensaje para enviar cualquier respuesta
@@ -131,6 +132,6 @@ def health():
         resp = jsonify(health="muerto")
         resp.status_code = 500
     return resp
-   
+ 
 if __name__ == '__main__':
     app.run(debug=os.getenv("DEBUG"),host='0.0.0.0', port=os.getenv("PORT", default=5000))
