@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block title %}Perfil{% endblock %}
+
+{% block content %}
+<h2>Perfil</h2>
+<div>
+    <p>Detalles de la cuenta:</p>
+    <table aria-describedby="mydesc">
+        <th>
+            <tr>
+                <td>usuario:</td>
+                <td>{{ cuenta['usuario'] }}</td>
+            </tr>
+            <tr>
+                <td>Contraseña:</td>
+                <td>{{ cuenta['password'] }}</td>
+            </tr>
+            <tr>
+                <td>Correo:</td>
+                <td>{{ cuenta['correo'] }}</td>
+            </tr>
+        </th>
+    </table>
+</div>
+{% endblock %}
