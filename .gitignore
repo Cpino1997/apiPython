@@ -1,5 +1,6 @@
 # Ignorar la carpeta venv
 venv/
+__pycache__
 
 # Ignorar la carpeta .idea
 .idea/

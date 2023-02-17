@@ -18,7 +18,7 @@ para esto utilizaremos los siguientes comandos:
     #instalamos las dependencias:
     pip install -r requirements.txt
     #esperamos a que termine y ejecutamos nuestra app
-    python -m main.py
+    python -m app.py
 ```
 
 
