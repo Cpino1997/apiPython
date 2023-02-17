@@ -25,7 +25,7 @@ def index():
 
 @app.route('/api')
 def api():
-    return '<h1>Bienvenido al backend de pinolabs</h1>'
+    return '<h1 style="text-align: center; margin-top: 50px;">Bienvenido al backend de pinolabs</h1>'
 
 
 @app.route('/health', methods=['GET', 'POST'])
