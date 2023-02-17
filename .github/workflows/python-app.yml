@@ -25,7 +25,7 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Construir imagen
-      run: docker build -t flaskApi:latest .
+      run: docker build -t pythonflask:latest .
     - name: Guardar imagen como artefacto
       uses: actions/upload-artifact@v2
       with:
@@ -39,5 +39,5 @@ jobs:
     - name: Publicar artefacto
       uses: actions/upload-artifact@v2
       with:
-        name: flaskApi
-        path: flaskApi
+        name: pythonflask
+        path: pythonflask
