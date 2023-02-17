@@ -1,41 +1,46 @@
 from flask import request, Blueprint, jsonify
-
-from controladores.validadores import login_required, rol_required
+from flask_jwt_extended import jwt_required, unset_jwt_cookies
 from servicios import servicio_auth
+from utils.validadores import validate_input, rol_required
 
 bp_auth = Blueprint('auth', __name__, url_prefix='/api/auth')
 
+blacklist = set()
+
 
 @bp_auth.route("/login", methods=['GET', 'POST'])
+@validate_input
 def login():
-    if request.method == 'POST' and request.is_json:
-        data = request.get_json()
-        usuario = data.get('usuario')
-        password = data.get('password')
-        if not usuario:
-            return jsonify(error="debe ingresar un usuario"), 500
-        if not password:
-            return jsonify(error="debe ingresar una contraseña"), 500
-        cuenta = servicio_auth.login(usuario, password)
-        return cuenta
+    usuario = request.json.get('usuario', None)
+    password = request.json.get('password', None)
+    response = servicio_auth.login(usuario, password)
+    return response
 
 
-@bp_auth.route("/logout", methods=['GET', 'POST'])
-@login_required
+@bp_auth.route("/test", methods=['GET'])
+@jwt_required()
+def proteccion():
+    return jsonify({"msg": "Esta es una ruta protegida"}), 200
+
+
+@bp_auth.route('/logout', methods=['POST'])
+@jwt_required()
 def logout():
-    mensaje = servicio_auth.logout()
-    return mensaje
-
-
-@bp_auth.route("/session", methods=["POST", "GET"])
-@login_required
-def get_session():
-    mensaje = servicio_auth.get_session()
-    return mensaje
+    resp = jsonify({'logout': True})
+    unset_jwt_cookies(resp)
+    return resp, 200
 
 
 @bp_auth.route("/testuser", methods=["GET"])
-@login_required
+@jwt_required()
 @rol_required("user")
 def testUser():
     return jsonify("funcionando")
+
+
+@bp_auth.route("/testadmin", methods=["GET"])
+@jwt_required()
+@rol_required("admin")
+def testAdmin():
+    return jsonify("funcionando")
+
