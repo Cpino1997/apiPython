@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Cambiar al directorio raíz del proyecto
-      run: cd apiPython
     - name: Configurando Python
       uses: actions/setup-python@v3
       with:
@@ -29,6 +27,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
     - name: Construir imagen
       if: github.ref == 'refs/heads/master' # solo construye imagen para la rama master
       run: docker build -t pythonflask:1.0.2 .
