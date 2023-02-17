@@ -27,7 +27,7 @@ jobs:
     - name: Construir imagen
       run: docker build -t pythonflask:latest .
     - name: Guardar imagen como artefacto
-      uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: pythonflask
         path: |
@@ -37,7 +37,7 @@ jobs:
           ./app
           ./requirements.txt
     - name: Publicar artefacto
-      uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: pythonflask
         path: pythonflask
