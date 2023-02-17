@@ -15,7 +15,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Config GitActions
+      uses: actions/checkout@v3
     - name: Configurando Python
       uses: actions/setup-python@v3
       with:
@@ -24,23 +25,23 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        - name: Construyendo imagen
-            run: docker build -t flaskApi:latest .
-          - name: Guardar imagen como artefacto
-            uses: actions/upload-artifact@v3
-            with:
-              name: flaskApi
-              path: |
-                /usr/bin/docker
-                /usr/bin/docker-compose
-                Dockerfile
-                ./app
-                ./requirements.txt
-          - name: Publicar artefacto
-            uses: actions/upload-artifact@v3
-            with:
-              name: flaskApi
-              path: flaskApi
+    - name: Construyendo imagen
+      run: docker build -t flaskApi:latest .
+    - name: Guardar imagen como artefacto
+      uses: actions/upload-artifact@v3
+      with:
+        name: flaskApi
+        path: |
+          /usr/bin/docker
+          /usr/bin/docker-compose
+          Dockerfile
+          ./app
+          ./requirements.txt
+    - name: Publicar artefacto
+      uses: actions/upload-artifact@v3
+      with:
+        name: flaskApi
+        path: flaskApi
 
   deploy:
     needs: build
