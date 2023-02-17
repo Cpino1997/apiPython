@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -25,19 +25,21 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Construir imagen
+      if: github.ref == 'refs/heads/master' # solo construye imagen para la rama master
       run: docker build -t pythonflask:latest .
-    - name: Guardar imagen como artefacto
-    - uses: actions/upload-artifact@v3
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
       with:
-        name: pythonflask
-        path: |
-          /usr/bin/docker
-          /usr/bin/docker-compose
-          Dockerfile
-          ./app
-          ./requirements.txt
-    - name: Publicar artefacto
-    - uses: actions/upload-artifact@v3
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push
+      if: github.ref == 'refs/heads/master' # solo sube la imagen a Docker Hub para la rama master
+      uses: docker/build-push-action@v4
       with:
-        name: pythonflask
-        path: pythonflask
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/pythonflask:1.0.2
+    - name: Deploy
+      if: github.ref == 'refs/heads/master' # solo despliega la imagen en la rama master
+      run: |
+        docker pull ${{ secrets.DOCKERHUB_USERNAME }}/pythonflask:1.0.2
+        docker run -d -p 5000:5000 --name pythonflask ${{ secrets.DOCKERHUB_USERNAME }}/pythonflask:1.0.2
