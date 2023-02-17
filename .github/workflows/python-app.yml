@@ -42,7 +42,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         push: true
-        tags: pythonflask:1.0.2
+        tags: ${{ secrets.DOCKER_USERNAME }}/pythonflask:1.0.2
     - name: Deploy
       if: github.ref == 'refs/heads/master' # solo despliega la imagen en la rama master
       run: |
