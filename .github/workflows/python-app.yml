@@ -25,6 +25,7 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
   deploy:
+    runs-on: ubuntu-latest
     steps:
     - name: Construir imagen
       if: github.ref == 'refs/heads/master' # solo construye imagen para la rama master
