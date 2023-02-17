@@ -29,7 +29,7 @@ jobs:
     - name: Guardar imagen como artefacto
       uses: actions/upload-artifact@v2
       with:
-        name: flaskApi
+        name: pythonflask
         path: |
           /usr/bin/docker
           /usr/bin/docker-compose
