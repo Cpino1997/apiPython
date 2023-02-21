@@ -17,12 +17,6 @@ def login():
     return response
 
 
-@bp_auth.route("/test", methods=['GET'])
-@jwt_required()
-def proteccion():
-    return jsonify({"msg": "Esta es una ruta protegida"}), 200
-
-
 @bp_auth.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
@@ -31,16 +25,16 @@ def logout():
     return resp, 200
 
 
-@bp_auth.route("/testuser", methods=["GET"])
+@bp_auth.route("/user", methods=["GET"])
 @jwt_required()
 @rol_required("user")
-def testUser():
-    return jsonify("funcionando")
+def test_user():
+    return jsonify("funcionando"), 200
 
 
-@bp_auth.route("/testadmin", methods=["GET"])
+@bp_auth.route("/admin", methods=["GET"])
 @jwt_required()
 @rol_required("admin")
-def testAdmin():
-    return jsonify("funcionando")
+def test_admin():
+    return jsonify("funcionando"), 200
 

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, url_for, redirect
 from flask_jwt_extended.exceptions import NoAuthorizationError
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
@@ -16,6 +16,16 @@ CORS(app)
 
 app.register_blueprint(bp_auth)
 app.register_blueprint(bp_cuentas)
+
+
+@app.route('/')
+def index():
+    return redirect(url_for('api'))
+
+
+@app.route('/api')
+def api():
+    return '<h1 style="text-align: center; margin-top: 50px;">Bienvenido al backend de pinolabs</h1>'
 
 
 @app.route('/health', methods=['GET', 'POST'])
