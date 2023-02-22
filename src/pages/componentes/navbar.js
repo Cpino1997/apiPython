@@ -1,14 +1,11 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import {useState} from "react";
 import Head from "next/head";
 
 const Navbar = () => {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true);
 
     const handleLogout = async () => {
-        setIsLoading(true);
         try {
             const response = await fetch(process.env.API_ENDPOINT + "/auth/logout", {
                 method: "POST",
@@ -19,16 +16,13 @@ const Navbar = () => {
             });
             if (response.ok) {
                 localStorage.removeItem("access_token");
-                setIsLoading(false);
                 await router.push("/");
             } else {
                 const { mensaje } = await response.json();
                 alert(mensaje);
-                setIsLoading(false);
             }
         } catch (error) {
             alert(error.message);
-            setIsLoading(false);
         }
     };
 
@@ -40,7 +34,7 @@ const Navbar = () => {
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <link rel="icon" href="/favicon.ico" />
         </Head>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark w-100">
             <div className="container">
                 <Link href="/" className="navbar-brand">Cliente</Link>
                 <button
@@ -54,7 +48,7 @@ const Navbar = () => {
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
+                <div className="collapse navbar-collapse text-center" id="navbarNav">
                     <ul className="navbar-nav mr-auto">
                         <li className="nav-item">
                             <Link href="/dashboard"  className={`nav-link ${router.pathname === '/dashboard' && 'active'}`}>Inicio</Link>

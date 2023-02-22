@@ -40,7 +40,7 @@ export default function Home() {
       </Head>
       <main>
           {isLoggedIn ? (
-              <p>Cargando...</p>
+              <p>No te encuentras logeado! ...</p>
           ) : (
          <div className="container mt-5">
              <div className="row justify-content-center">
