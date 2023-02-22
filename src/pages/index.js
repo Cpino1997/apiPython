@@ -1,5 +1,4 @@
-import Head from 'next/head'
-import Script from "next/script";
+import Head from 'next/head';
 import {useState} from "react";
 import {useRouter} from "next/router";
 
@@ -8,6 +7,7 @@ export default function Home() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const router = useRouter();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -20,6 +20,10 @@ export default function Home() {
         });
 
         if (response.ok) {
+            const data = await response.json();
+            const access_token = data.access_token;
+            localStorage.setItem('access_token', access_token);
+            setIsLoggedIn(true);
             await router.push('/dashboard');
         } else {
             const { mensaje } = await response.json();
@@ -34,7 +38,10 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-     <main>
+      <main>
+          {isLoggedIn ? (
+              <p>Cargando...</p>
+          ) : (
          <div className="container mt-5">
              <div className="row justify-content-center">
                  <div className="col-md-6">
@@ -78,8 +85,8 @@ export default function Home() {
                  </div>
              </div>
          </div>
-     </main>
-        <Script src="/bootstrap/dist/js/bootstrap.bundle.js" />
+          )}
+      </main>
     </>
   )
 }
