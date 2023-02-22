@@ -1,18 +1,44 @@
-from flask import Flask, jsonify, url_for, redirect
+from flask import Flask, jsonify, url_for, redirect, request
 from flask_jwt_extended.exceptions import NoAuthorizationError
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from flask_swagger import swagger
 
 from controladores.controlador_auth import bp_auth
 from controladores.controlador_cuentas import bp_cuentas
 from servicios.servicio_health import check_status
+from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 api = Api(app)
 jwt = JWTManager(app)
 CORS(app)
+
+SWAGGER_URL = '/api/docs'
+API_URL = '/api/swagger.json'
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Pinolabs Backend",
+        'app_version': "1.0.3"
+    }
+)
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+
+@app.route('/api/swagger.json')
+def swagger_api():
+    swag = swagger(app)
+    swag['info']['version'] = "1.0.3"
+    swag['info']['title'] = "ApiFlask Backend"
+    swag['info']['description'] = 'Este documento contiene la documentacion de esta api en formato OpenAPI'
+    swag['host'] = request.host
+    swag['paths'] = {"Authorization": '/api/auth/login', 'Gestion de Cuentas': '/api/cuentas'}
+    return jsonify(swag)
+
 
 app.register_blueprint(bp_auth)
 app.register_blueprint(bp_cuentas)
