@@ -44,3 +44,5 @@ def get_rol(usuario):
     roles = cursor.fetchone()
     cursor.close()
     return roles[0]
+
+
