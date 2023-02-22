@@ -12,6 +12,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 600000
 api = Api(app)
 jwt = JWTManager(app)
 CORS(app)
