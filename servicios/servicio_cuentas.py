@@ -2,7 +2,7 @@ from flask import jsonify
 
 from config.db import obtener_conexion
 from servicios.servicio_auth import encripta_password, compara_password
-from utils.validadores import valida_password
+from utils.validadores import valida_password, valida_cuenta
 
 
 def get_cuentas():
@@ -88,7 +88,8 @@ def post_cuenta(cuenta):
     return jsonify(error="el usuario ingresado ya existe!"), 400
 
 
-def put_cuenta(_id, cuenta):
+def put_cuenta(_id, data):
+    cuenta = valida_cuenta(data)
     usuario = cuenta.get('usuario')
     if verifica_usuario(usuario):
         conn = obtener_conexion()
@@ -99,7 +100,7 @@ def put_cuenta(_id, cuenta):
         conn.commit()
         conn.close()
         if filas_afectadas == 0:
-            return jsonify(error="No se ha actualizado ninguna cuenta"), 500
+            return jsonify(error="No se ha actualizado ninguna cuenta"), 400
         return jsonify(cuenta), 200
     return jsonify(error="el usuario ingresado ya existe!"), 400
 
@@ -121,15 +122,15 @@ def put_password(datos, _id):
             if filas_afectadas == 0:
                 return jsonify("no se a podido actualizar la contraseña"), 400
             else:
-                return jsonify("contraseña actualizada con exito!"), 200
-        return jsonify("la contraseña ingresada no es valida!"), 400
+                return jsonify(mensaje="password actualizada con exito!"), 200
+        return jsonify(error="la password ingresada no es valida!"), 400
     return jsonify(error="debe ingresar datos en el formulario!"), 400
 
 
 def get_cuenta_identity(identity):
     conn = obtener_conexion()
     cursor = conn.cursor()
-    cursor.execute("SELECT usuario, correo, roles FROM cuentas WHERE usuario = %s", (identity,))
+    cursor.execute("SELECT usuario, correo, roles, id FROM cuentas WHERE usuario = %s", (identity,))
     db = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -139,5 +140,6 @@ def get_cuenta_identity(identity):
     return {
         "usuario": db[0],
         "correo": db[1],
-        "roles": db[2]
+        "roles": db[2],
+        "id": db[3],
     }

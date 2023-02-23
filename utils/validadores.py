@@ -43,7 +43,7 @@ def valida_cuenta(cuenta):
         return jsonify(error="ingrese un correo"), 400
     if cuenta.get('roles') is None:
         cuenta['roles'] = "user"
-        return cuenta
+    return cuenta
 
 
 def valida_password(datos):

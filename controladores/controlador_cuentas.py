@@ -37,13 +37,14 @@ def post_cuenta():
 @jwt_required()
 def put_cuenta(_id):
     data = request.get_json()
-    data['password'] = 000
-    update = valida_cuenta(data)
-    response = servicio_cuentas.put_cuenta(_id, update)
+    data['password'] = 123
+    cuenta = valida_cuenta(data)
+    response = servicio_cuentas.put_cuenta(_id, cuenta)
     return response
 
 
-@bp_cuentas.route("/cuentas/<_id>/password", methods=['PUT'])
+@bp_cuentas.route("/auth/password/<_id>", methods=['PUT'])
+@jwt_required()
 def put_password(_id):
     data = request.get_json()
     response = servicio_cuentas.put_password(data, _id)
@@ -51,6 +52,7 @@ def put_password(_id):
 
 
 @bp_cuentas.route("/cuentas/<_id>", methods=['DELETE'])
+@jwt_required()
 def delete_cuenta(_id):
     cuenta = servicio_cuentas.eliminar_cuenta(_id)
     if cuenta:
