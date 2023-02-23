@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from servicios import servicio_cuentas
 from utils.validadores import valida_cuenta
 
@@ -57,3 +57,11 @@ def delete_cuenta(_id):
         return jsonify("se a eliminado con exito la cuenta!"), 200
     else:
         return jsonify("no se a podido eliminar la cuenta con exito :C"), 400
+
+
+@bp_cuentas.route("/cuentas/get", methods=['GET'])
+@jwt_required()
+def get_cuenta_identity():
+    identity = get_jwt_identity()
+    cuenta = servicio_cuentas.get_cuenta_identity(identity)
+    return cuenta
