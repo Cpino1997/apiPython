@@ -1,7 +1,6 @@
 import bcrypt
 from flask import jsonify
 from flask_jwt_extended import create_access_token
-
 from config.db import obtener_conexion
 
 
@@ -44,5 +43,3 @@ def get_rol(usuario):
     roles = cursor.fetchone()
     cursor.close()
     return roles[0]
-
-

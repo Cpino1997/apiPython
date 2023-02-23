@@ -4,7 +4,6 @@ from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_swagger import swagger
-
 from controladores.controlador_auth import bp_auth
 from controladores.controlador_cuentas import bp_cuentas
 from servicios.servicio_health import check_status
@@ -18,7 +17,7 @@ jwt = JWTManager(app)
 CORS(app)
 
 SWAGGER_URL = '/api/docs'
-API_URL = '/api/swagger.json'
+API_URL = '/swagger'
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
@@ -30,7 +29,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 
-@app.route('/api/swagger.json')
+@app.route('/api/docs/swagger')
 def swagger_api():
     swag = swagger(app)
     swag['info']['version'] = "1.0.3"

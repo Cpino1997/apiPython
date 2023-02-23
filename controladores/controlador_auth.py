@@ -1,8 +1,6 @@
 from flask import request, Blueprint, jsonify
-from flask_jwt_extended import jwt_required, unset_jwt_cookies, current_user, get_jwt_identity, create_access_token, \
-    verify_jwt_in_request
+from flask_jwt_extended import jwt_required, unset_jwt_cookies, get_jwt_identity, create_access_token
 from servicios import servicio_auth
-
 from utils.validadores import validate_input, rol_required
 
 bp_auth = Blueprint('auth', __name__, url_prefix='/api/auth')
