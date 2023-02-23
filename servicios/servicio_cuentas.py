@@ -124,3 +124,20 @@ def put_password(datos, _id):
                 return jsonify("contraseña actualizada con exito!"), 200
         return jsonify("la contraseña ingresada no es valida!"), 400
     return jsonify(error="debe ingresar datos en el formulario!"), 400
+
+
+def get_cuenta_identity(identity):
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+    cursor.execute("SELECT usuario, correo, roles FROM cuentas WHERE usuario = %s", (identity,))
+    db = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    if not db:
+        return None
+
+    return {
+        "usuario": db[0],
+        "correo": db[1],
+        "roles": db[2]
+    }
