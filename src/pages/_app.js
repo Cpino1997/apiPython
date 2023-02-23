@@ -7,6 +7,8 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
 
   useEffect(() => {
+    require("bootstrap/dist/js/bootstrap.bundle.js");
+
     const VerificaToken = async () => {
       const access_token = localStorage.getItem("access_token");
       if (access_token) {
@@ -56,14 +58,11 @@ function MyApp({ Component, pageProps }) {
       }
     };
 
-    VerificaToken().then(r => console.log(r));
+    VerificaToken();
     const interval = setInterval(VerificaToken, 300000); // check every minute
     return () => clearInterval(interval);
   }, [router]);
 
-  useEffect(() => {
-    require("bootstrap/dist/js/bootstrap.bundle.min.js");
-  }, []);
 
   return <Component {...pageProps} />;
 }
