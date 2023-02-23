@@ -39,7 +39,13 @@ export default function Cuentas() {
     };
 
     if (isLoading) {
-        return <div>Cargando...</div>;
+        return(
+            <>
+            <div className={"container w-100"}>
+                <p className={"text-center cargando"}>Cargando...</p>
+            </div>
+            </>
+        );
     }
 
     if (isError) {

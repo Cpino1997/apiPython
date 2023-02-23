@@ -1,0 +1,27 @@
+name: NextJS con Power
+
+on:
+  push:
+    branches:
+      - cliente
+  pull_request:
+    branches: [ "cliente" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: "configurando nodeJS"
+      uses: actions/setup-node@v3
+      with:
+        node-version: 17
+    - name: "Instalando Dependencias"
+      run: npm ci
+    - name: "Inpeccionando el codigo"
+      run: npm run lint
+    - name: "Construyendo la Aplicacion"
+      run: npm run build

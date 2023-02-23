@@ -19,10 +19,12 @@ export default function Dashboard() {
             <Navbar></Navbar>
             <br/>
             {isLoading ? (
-                <p>Cargando...</p>
+                <div className={"container w-100"}>
+                    <p className={"text-center cargando"}>Cargando...</p>
+                </div>
             ) : (
                 <div className={"container w-100"}>
-                    <div className={"text-center"}>
+                    <div className={"text-center mt-5"}>
                         <h1>¡Bienvenido al dashboard!</h1>
                         <p>Este es el contenido de la página de dashboard.</p>
                     </div>

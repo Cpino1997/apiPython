@@ -1,6 +1,7 @@
-
-
 .centro{
     position: fixed;
     right: 50%;
+}
+.cargando{
+    margin: auto;
 }

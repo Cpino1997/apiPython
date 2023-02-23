@@ -4,7 +4,6 @@ import Head from "next/head";
 
 const Navbar = () => {
     const router = useRouter();
-
     const handleLogout = async () => {
         try {
             const response = await fetch(process.env.API_ENDPOINT + "/auth/logout", {
